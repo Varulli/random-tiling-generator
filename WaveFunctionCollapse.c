@@ -166,6 +166,8 @@ int main() {
 		...
 	   . . . end loop */
 	
+	getchar();
+
 	int timer = (int)time(NULL);
 	srand(timer);
 
@@ -204,9 +206,11 @@ int main() {
 		}
 
 		sort(0, DIM_X * DIM_Y - 1);
-	}
 
-	printTiles();
+		printf("\x1b[H");
+		printTiles();
+		Sleep(50);
+	}
 
 	return 0;
 }
