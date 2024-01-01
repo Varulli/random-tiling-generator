@@ -4,5 +4,5 @@ A random tiling generator uses a preset list of tiles that follow certain adjace
 
 Tiles can be manually adjusted to create different effects.
 
-![image](https://github.com/Varulli/random-tiling-generator/assets/120419874/e90cfff1-b97e-4264-911c-7fb6af11f45c)
-![image](https://github.com/Varulli/random-tiling-generator/assets/120419874/b49a341e-6103-4b76-866e-cff4a9d7aa90)
+![tiling_1](https://github.com/Varulli/random-tiling-generator/assets/120419874/771433bc-cbcf-414f-8d29-aff5322afb4a)
+![tiling_2](https://github.com/Varulli/random-tiling-generator/assets/120419874/663117ec-38fd-454a-95db-0e8e03e41fd4)
