@@ -166,7 +166,7 @@ int main() {
 		...
 	   . . . end loop */
 	
-	getchar();
+	//getchar();
 
 	int timer = (int)time(NULL);
 	srand(timer);
