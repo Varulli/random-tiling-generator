@@ -183,7 +183,7 @@ int main()
 
 	char buffer[10];
 
-	printf("\x1b[?1049h\x1b[?25l");
+	printf("\x1b[?1049h");
 	fflush(stdout);
 
 	printf("  Vertical symbol? (default: '|') -> ");
@@ -199,7 +199,7 @@ int main()
 	clean_fgets(buffer, 10);
 	blankSymbol = buffer[0] == '\n' ? ' ' : buffer[0];
 
-	printf("\x1b[H");
+	printf("\x1b[?25l\x1b[H");
 	fflush(stdout);
 
 	/* loop until all tiles numChoices == 0 . . .
