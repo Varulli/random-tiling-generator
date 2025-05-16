@@ -11,22 +11,15 @@
 #define DOT 16		  // 0001 0000
 #define HORIZONTAL 5  // 0000 0101
 #define VERTICAL 10	  // 0000 1010
-#define top_QUAD 3	  // 0000 0011
-#define mid_QUAD 6	  // 0000 0110
-#define bot_QUAD 12	  // 0000 1100
+#define FIRST_QUAD 3  // 0000 0011
+#define SECOND_QUAD 6 // 0000 0110
+#define THIRD_QUAD 12 // 0000 1100
 #define FOURTH_QUAD 9 // 0000 1001
 
 #define RIGHT 0
 #define UP 1
 #define LEFT 2
 #define DOWN 3
-
-//        |
-//  + -+- +
-//        |
-//  |  |
-//  +--+ -+  +-
-//        |  |
 
 typedef struct tile
 {
@@ -38,6 +31,11 @@ typedef struct tile
 
 tile array[DIM_X * DIM_Y];
 tile *copy[DIM_X * DIM_Y];
+
+char verticalSymbol;
+char horizontalSymbol;
+char centerSymbol;
+char blankSymbol;
 
 void removeChoices(tile *t, uint8_t state, int dir)
 {
@@ -112,48 +110,59 @@ void printTiles()
 			switch (array[DIM_X * i + j].type)
 			{
 			case BLANK:
-				strcat(top, "   ");
-				strcat(mid, "   ");
-				strcat(bot, "   ");
+				sprintf(top + j * 3, "%c%c%c", blankSymbol, blankSymbol, blankSymbol);
+				sprintf(mid + j * 3, "%c%c%c", blankSymbol, blankSymbol, blankSymbol);
+				sprintf(bot + j * 3, "%c%c%c", blankSymbol, blankSymbol, blankSymbol);
 				break;
 			case DOT:
-				strcat(top, "   ");
-				strcat(mid, " + ");
-				strcat(bot, "   ");
+				sprintf(top + j * 3, "%c%c%c", blankSymbol, blankSymbol, blankSymbol);
+				sprintf(mid + j * 3, "%c%c%c", blankSymbol, centerSymbol, blankSymbol);
+				sprintf(bot + j * 3, "%c%c%c", blankSymbol, blankSymbol, blankSymbol);
 				break;
 			case HORIZONTAL:
-				strcat(top, "   ");
-				strcat(mid, "-+-");
-				strcat(bot, "   ");
+				sprintf(top + j * 3, "%c%c%c", blankSymbol, blankSymbol, blankSymbol);
+				sprintf(mid + j * 3, "%c%c%c", horizontalSymbol, centerSymbol, horizontalSymbol);
+				sprintf(bot + j * 3, "%c%c%c", blankSymbol, blankSymbol, blankSymbol);
 				break;
 			case VERTICAL:
-				strcat(top, " | ");
-				strcat(mid, " + ");
-				strcat(bot, " | ");
+				sprintf(top + j * 3, "%c%c%c", blankSymbol, verticalSymbol, blankSymbol);
+				sprintf(mid + j * 3, "%c%c%c", blankSymbol, centerSymbol, blankSymbol);
+				sprintf(bot + j * 3, "%c%c%c", blankSymbol, verticalSymbol, blankSymbol);
 				break;
-			case top_QUAD:
-				strcat(top, " | ");
-				strcat(mid, " +-");
-				strcat(bot, "   ");
+			case FIRST_QUAD:
+				sprintf(top + j * 3, "%c%c%c", blankSymbol, verticalSymbol, blankSymbol);
+				sprintf(mid + j * 3, "%c%c%c", blankSymbol, centerSymbol, horizontalSymbol);
+				sprintf(bot + j * 3, "%c%c%c", blankSymbol, blankSymbol, blankSymbol);
 				break;
-			case mid_QUAD:
-				strcat(top, " | ");
-				strcat(mid, "-+ ");
-				strcat(bot, "   ");
+			case SECOND_QUAD:
+				sprintf(top + j * 3, "%c%c%c", blankSymbol, verticalSymbol, blankSymbol);
+				sprintf(mid + j * 3, "%c%c%c", horizontalSymbol, centerSymbol, blankSymbol);
+				sprintf(bot + j * 3, "%c%c%c", blankSymbol, blankSymbol, blankSymbol);
 				break;
-			case bot_QUAD:
-				strcat(top, "   ");
-				strcat(mid, "-+ ");
-				strcat(bot, " | ");
+			case THIRD_QUAD:
+				sprintf(top + j * 3, "%c%c%c", blankSymbol, blankSymbol, blankSymbol);
+				sprintf(mid + j * 3, "%c%c%c", horizontalSymbol, centerSymbol, blankSymbol);
+				sprintf(bot + j * 3, "%c%c%c", blankSymbol, verticalSymbol, blankSymbol);
 				break;
 			case FOURTH_QUAD:
-				strcat(top, "   ");
-				strcat(mid, " +-");
-				strcat(bot, " | ");
+				sprintf(top + j * 3, "%c%c%c", blankSymbol, blankSymbol, blankSymbol);
+				sprintf(mid + j * 3, "%c%c%c", blankSymbol, centerSymbol, horizontalSymbol);
+				sprintf(bot + j * 3, "%c%c%c", blankSymbol, verticalSymbol, blankSymbol);
 				break;
 			}
 		}
 		printf("[%s]\n[%s]\n[%s]\n", top, mid, bot);
+	}
+}
+
+void clean_fgets(char *buffer, int max)
+{
+	fgets(buffer, max, stdin);
+	if (!strchr(buffer, '\n'))
+	{
+		int c;
+		while ((c = getchar()) != '\n' && c != EOF)
+			;
 	}
 }
 
@@ -165,12 +174,33 @@ int main()
 	{
 		for (int j = 0; j < DIM_X; j++)
 		{
-			tile newTile = {DIM_X * i + j, BLANK, 8, {BLANK, DOT, HORIZONTAL, VERTICAL, top_QUAD, mid_QUAD, bot_QUAD, FOURTH_QUAD}};
+			tile newTile = {DIM_X * i + j, BLANK, 8, {BLANK, DOT, HORIZONTAL, VERTICAL, FIRST_QUAD, SECOND_QUAD, THIRD_QUAD, FOURTH_QUAD}};
 			array[DIM_X * i + j] = newTile;
 			tile *pNewTile = &array[DIM_X * i + j];
 			copy[DIM_X * i + j] = pNewTile;
 		}
 	}
+
+	char buffer[10];
+
+	printf("\x1b[?1049h\x1b[?25l");
+	fflush(stdout);
+
+	printf("  Vertical symbol? (default: '|') -> ");
+	clean_fgets(buffer, 10);
+	verticalSymbol = buffer[0] == '\n' ? '|' : buffer[0];
+	printf("Horizontal symbol? (default: '-') -> ");
+	clean_fgets(buffer, 10);
+	horizontalSymbol = buffer[0] == '\n' ? '-' : buffer[0];
+	printf("    Center symbol? (default: '+') -> ");
+	clean_fgets(buffer, 10);
+	centerSymbol = buffer[0] == '\n' ? '+' : buffer[0];
+	printf("     Blank symbol? (default: ' ') -> ");
+	clean_fgets(buffer, 10);
+	blankSymbol = buffer[0] == '\n' ? ' ' : buffer[0];
+
+	printf("\x1b[H");
+	fflush(stdout);
 
 	/* loop until all tiles numChoices == 0 . . .
 	   section off lowest numChoices tile(s) in copy of array
@@ -191,9 +221,6 @@ int main()
 	srand(timer);
 
 	clock_t t;
-
-	printf("\x1b[?1049h\x1b[?25l");
-	fflush(stdout);
 
 	while (copy[DIM_X * DIM_Y - 1]->numChoices)
 	{
@@ -248,7 +275,7 @@ int main()
 			;
 	}
 
-	printf("Press Enter to Return");
+	printf("\nPress Enter to Return");
 	fflush(stdout);
 	getchar();
 
